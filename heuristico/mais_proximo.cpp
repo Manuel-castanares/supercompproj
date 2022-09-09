@@ -29,6 +29,7 @@ int main(){
     bool fim = 0;
     int index = 0;
     int cacheIndex = 0;
+    double totalDist = 0;
     vector<int> cidadesVerificadas;
     cidadesVerificadas.push_back(0);
     while(fim == 0){
@@ -53,11 +54,18 @@ int main(){
         } else {
             index = cacheIndex;
             cidadesVerificadas.push_back(index);
+            totalDist += minDist;
         }
     }
+    int ultimaCidade = cidadesVerificadas[cidadesVerificadas.size()-1];
+    double dist = pow(pow(cidades[0].x - cidades[ultimaCidade].x, 2) + pow(cidades[0].y - cidades[ultimaCidade].y, 2), 0.5);
+    totalDist += dist;
+    cout << totalDist << " " << 0 << endl;
     for(int i = 0; i < numCidades; i++){
-        cout << cidadesVerificadas[i] << endl;
+        cout << cidadesVerificadas[i] << " ";
     }
+    cout << endl;
+    
 
     return 0;
 }
