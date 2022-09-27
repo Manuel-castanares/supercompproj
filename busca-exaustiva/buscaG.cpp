@@ -15,13 +15,13 @@ struct cidade {
 
 vector<int> final;
 float melhor = 0;
-int numFolhas = 0;
+long int numFolhas = 0;
 
-vector<int> busca(vector<cidade> cidades, vector<int> used, int numCidades){
+vector<int> busca(vector<cidade> cidades, vector<int> used, long unsigned int numCidades){
     if(used.size() == numCidades){
         float totalDist = 0;
         double dist = 0;
-        for(int i = 0; i < numCidades-1; i++){
+        for(long unsigned int i = 0; i < numCidades-1; i++){
             dist = pow(pow(cidades[used[i]].x - cidades[used[i+1]].x, 2) + pow(cidades[used[i]].y - cidades[used[i+1]].y, 2), 0.5);
             totalDist += dist;
         }
@@ -40,7 +40,7 @@ vector<int> busca(vector<cidade> cidades, vector<int> used, int numCidades){
         return used;
     } 
     vector<int> result;
-    for(int i = 0; i < numCidades; i++){
+    for(long unsigned int i = 0; i < numCidades; i++){
         if(i == 0){
             bool found = (find(used.begin(), used.end(), cidades[i].id) != used.end());
             if(!found){
@@ -59,10 +59,10 @@ vector<int> busca(vector<cidade> cidades, vector<int> used, int numCidades){
 }
 
 int main(){
-    int numCidades;
+    long unsigned int numCidades;
     cin >> numCidades;
     vector<cidade> cidades;
-    for(int i = 0; i < numCidades; i++){
+    for(long unsigned int i = 0; i < numCidades; i++){
         cidade novo;
         novo.id = i;
         double texto;
@@ -75,7 +75,7 @@ int main(){
     vector<int> used;
     busca(cidades, used, numCidades);
     cout << melhor << " " << 1 << endl;
-    for(int i = 0; i < numCidades-1; i++){
+    for(long unsigned int i = 0; i < numCidades-1; i++){
         cout << final[i] << " ";
     }
     cerr << "num_leaf " << numFolhas << endl;
