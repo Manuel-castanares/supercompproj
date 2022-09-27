@@ -15,6 +15,7 @@ struct cidade {
 
 vector<int> final;
 float melhor = 0;
+int numFolhas = 0;
 
 vector<int> busca(vector<cidade> cidades, vector<int> used, int numCidades){
     if(used.size() == numCidades){
@@ -35,6 +36,7 @@ vector<int> busca(vector<cidade> cidades, vector<int> used, int numCidades){
                 final = used;
             }
         }
+        numFolhas += 1;
         return used;
     } 
     vector<int> result;
@@ -76,6 +78,7 @@ int main(){
     for(int i = 0; i < numCidades-1; i++){
         cout << final[i] << " ";
     }
+    cerr << "num_leaf " << numFolhas << endl;
     cout << final[numCidades-1] << endl;
 
     return 0;
