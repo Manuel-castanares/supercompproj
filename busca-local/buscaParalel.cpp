@@ -96,14 +96,23 @@ int main(){
 
     vector<float> resultFinal;
     vector<float> resultTemp;
-    for(int i = 0; i < numCidades*10; i++){
-        resultTemp = menorDist(cidades, ordens[i], numCidades);
-        if(i == 0){
-            resultFinal = resultTemp;
-        }
-        else {
-            if(resultTemp[0] < resultFinal[0]){
+    #pragma omp parallel
+    {
+        #pragma omp for private(resultTemp)
+        for(int i = 0; i < numCidades*10; i++){
+            resultTemp = menorDist(cidades, ordens[i], numCidades);
+            if(i == 0){
                 resultFinal = resultTemp;
+            }
+            else {
+                if(resultTemp[0] < resultFinal[0]){
+                    #pragma omp critical
+                    {
+                        if(resultTemp[0] < resultFinal[0]){
+                            
+                            resultFinal = resultTemp;
+                        }
+                }   }
             }
         }
     }
