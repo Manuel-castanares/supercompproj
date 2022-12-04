@@ -16,15 +16,13 @@ struct cidade {
 float Dist(vector<cidade> route, int numCidades){
     float totalDist = 0;
     for(int i = 0; i < numCidades-1; i++){
-        double dist = pow(pow(route[i].x - route[i+1].x, 2) + pow(route[i].y - route[i+1].y, 2), 0.5);
-        totalDist += dist;
+        totalDist += pow(pow(route[i].x - route[i+1].x, 2) + pow(route[i].y - route[i+1].y, 2), 0.5);
     }
-    double dist = pow(pow(route[0].x - route[numCidades-1].x, 2) + pow(route[0].y - route[numCidades-1].y, 2), 0.5);
-    totalDist += dist;
+    totalDist += pow(pow(route[0].x - route[numCidades-1].x, 2) + pow(route[0].y - route[numCidades-1].y, 2), 0.5);
     return totalDist;
 }
 
-vector<float> menorDist(vector<cidade> route, vector<int> ordem, int numCidades){
+float menorDist(vector<cidade> route, vector<int> ordem, int numCidades){
     bool check = true;
     vector<cidade> orderedRoute;
     for(int i = 0; i < numCidades; i++){
@@ -34,23 +32,66 @@ vector<float> menorDist(vector<cidade> route, vector<int> ordem, int numCidades)
     int index = 0;
     float DistTemp = 0;
     vector<cidade> routeCopy;
+    int temp = 0;
     while(check){
         if(index < numCidades-1){
             routeCopy = orderedRoute;
             routeCopy[index+1] = orderedRoute[index];
             routeCopy[index] = orderedRoute[index+1];
+            temp = ordem[index+1];
+            ordem[index+1] = ordem[index];
+            ordem[index] = temp;
             DistTemp = Dist(routeCopy, numCidades);
             if(DistTemp < minDist){
                 minDist = DistTemp;
                 orderedRoute = routeCopy;
+            } else {
+                temp = ordem[index+1];
+                ordem[index+1] = ordem[index];
+                ordem[index] = temp;
             }
         } else {
             check = false;
         }
         index += 1;
     }
-    vector<float> final;
-    final.push_back(minDist);
+    return minDist;
+}
+
+vector<int> menorRoute(vector<cidade> route, vector<int> ordem, int numCidades){
+    bool check = true;
+    vector<cidade> orderedRoute;
+    for(int i = 0; i < numCidades; i++){
+        orderedRoute.push_back(route[ordem[i]]);
+    }
+    float minDist = Dist(orderedRoute, numCidades);
+    int index = 0;
+    float DistTemp = 0;
+    vector<cidade> routeCopy;
+    int temp = 0;
+    while(check){
+        if(index < numCidades-1){
+            routeCopy = orderedRoute;
+            routeCopy[index+1] = orderedRoute[index];
+            routeCopy[index] = orderedRoute[index+1];
+            temp = ordem[index+1];
+            ordem[index+1] = ordem[index];
+            ordem[index] = temp;
+            DistTemp = Dist(routeCopy, numCidades);
+            if(DistTemp < minDist){
+                minDist = DistTemp;
+                orderedRoute = routeCopy;
+            } else {
+                temp = ordem[index+1];
+                ordem[index+1] = ordem[index];
+                ordem[index] = temp;
+            }
+        } else {
+            check = false;
+        }
+        index += 1;
+    }
+    vector<int> final;
     //cerr << "local: " << minDist << " ";
     for(int e = 0; e < numCidades; e++){
         //cerr << orderedRoute[e].id << " ";
@@ -60,6 +101,8 @@ vector<float> menorDist(vector<cidade> route, vector<int> ordem, int numCidades)
     //cerr << endl;
     return final;
 }
+
+
 
 int main(){
     int numCidades;
@@ -93,33 +136,35 @@ int main(){
         randoms.clear();
         counter = 0;
     }
-
-    vector<float> resultFinal;
-    vector<float> resultTemp;
+    float resultFinal;
+    float resultTemp;
+    int indexOrdem;
     #pragma omp parallel
     {
         #pragma omp for private(resultTemp)
         for(int i = 0; i < numCidades*10; i++){
-            resultTemp = menorDist(cidades, ordens[i], numCidades);
             if(i == 0){
-                resultFinal = resultTemp;
+                resultFinal = menorDist(cidades, ordens[i], numCidades);
+                indexOrdem = i;
             }
             else {
-                if(resultTemp[0] < resultFinal[0]){
-                    #pragma omp critical
-                    {
-                        if(resultTemp[0] < resultFinal[0]){
-                            
-                            resultFinal = resultTemp;
-                        }
-                }   }
+              resultTemp = menorDist(cidades, ordens[i], numCidades);
+              if(resultTemp < resultFinal){
+                #pragma omp critical
+                {
+                  if(resultTemp < resultFinal){
+                    resultFinal = resultTemp;
+                    indexOrdem = i;
+                  }
+                }
+              }
             }
         }
     }
-
-    cout << resultFinal[0] << " " << 0 << endl;
-    for(int i = 1; i <= numCidades; i++){
-        cout << resultFinal[i] << " ";
+    vector<int> route = menorRoute(cidades, ordens[indexOrdem], numCidades);
+    cout << resultFinal << " " << 0 << endl;
+    for(int i = 0; i < numCidades; i++){
+        cout << route[i] << " ";
     }
     cout << endl;
 
